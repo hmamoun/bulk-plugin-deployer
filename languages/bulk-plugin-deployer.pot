@@ -1,0 +1,157 @@
+# Copyright (C) 2024 Bulk Plugin Deployer
+# This file is distributed under the same license as the Bulk Plugin Deployer package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bulk Plugin Deployer 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bulk-plugin-deployer\n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2024-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: includes/class-bpd-admin.php:42
+msgid "Deploying plugins..."
+msgstr ""
+
+#: includes/class-bpd-admin.php:43
+msgid "Deployment completed successfully!"
+msgstr ""
+
+#: includes/class-bpd-admin.php:44
+msgid "An error occurred during deployment."
+msgstr ""
+
+#: includes/class-bpd-admin.php:45
+msgid "Are you sure you want to delete this site?"
+msgstr ""
+
+#: includes/class-bpd-admin.php:46
+msgid "Testing connection..."
+msgstr ""
+
+#: includes/class-bpd-admin.php:47
+msgid "Connection successful!"
+msgstr ""
+
+#: includes/class-bpd-admin.php:48
+msgid "Connection failed. Please check your credentials."
+msgstr ""
+
+#: templates/admin-page.php:6
+msgid "Bulk Plugin Deployer"
+msgstr ""
+
+#: templates/admin-page.php:12
+msgid "Manage Target Sites"
+msgstr ""
+
+#: templates/admin-page.php:17
+msgid "Add New Site"
+msgstr ""
+
+#: templates/admin-page.php:20
+msgid "Site Name"
+msgstr ""
+
+#: templates/admin-page.php:24
+msgid "Site URL"
+msgstr ""
+
+#: templates/admin-page.php:30
+msgid "FTP Host"
+msgstr ""
+
+#: templates/admin-page.php:34
+msgid "FTP Port"
+msgstr ""
+
+#: templates/admin-page.php:40
+msgid "FTP Username"
+msgstr ""
+
+#: templates/admin-page.php:44
+msgid "FTP Password"
+msgstr ""
+
+#: templates/admin-page.php:50
+msgid "FTP Path to Plugins"
+msgstr ""
+
+#: templates/admin-page.php:56
+msgid "Test Connection"
+msgstr ""
+
+#: templates/admin-page.php:59
+msgid "Save Site"
+msgstr ""
+
+#: templates/admin-page.php:62
+msgid "Clear Form"
+msgstr ""
+
+#: templates/admin-page.php:69
+msgid "Saved Sites"
+msgstr ""
+
+#: templates/admin-page.php:75
+msgid "Site Name"
+msgstr ""
+
+#: templates/admin-page.php:76
+msgid "URL"
+msgstr ""
+
+#: templates/admin-page.php:77
+msgid "FTP Host"
+msgstr ""
+
+#: templates/admin-page.php:78
+msgid "Actions"
+msgstr ""
+
+#: templates/admin-page.php:89
+msgid "Edit"
+msgstr ""
+
+#: templates/admin-page.php:92
+msgid "Delete"
+msgstr ""
+
+#: templates/admin-page.php:97
+msgid "No sites added yet. Add your first site above."
+msgstr ""
+
+#: templates/admin-page.php:103
+msgid "Deploy Plugins"
+msgstr ""
+
+#: templates/admin-page.php:108
+msgid "Select Plugins to Deploy"
+msgstr ""
+
+#: templates/admin-page.php:118
+msgid "No plugins found in wp-content/plugins directory."
+msgstr ""
+
+#: templates/admin-page.php:125
+msgid "Select Target Sites"
+msgstr ""
+
+#: templates/admin-page.php:137
+msgid "No sites added yet. Please add sites above first."
+msgstr ""
+
+#: templates/admin-page.php:145
+msgid "Deploy Selected Plugins"
+msgstr ""
+
+#: templates/admin-page.php:152
+msgid "Deployment Results"
+msgstr ""
+
+#: templates/admin-page.php:160
+msgid "Processing..."
+msgstr "" 

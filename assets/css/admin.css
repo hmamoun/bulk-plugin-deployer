@@ -1,0 +1,296 @@
+/* Bulk Plugin Deployer Admin Styles */
+
+.bpd-container {
+    max-width: 1200px;
+    margin: 20px 0;
+}
+
+.bpd-section {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.bpd-section h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #0073aa;
+    color: #23282d;
+}
+
+.bpd-section h3 {
+    margin-top: 0;
+    color: #23282d;
+}
+
+/* Form Styles */
+.bpd-form-container {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.bpd-form {
+    margin: 0;
+}
+
+.bpd-form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.bpd-form-group {
+    flex: 1;
+}
+
+.bpd-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #23282d;
+}
+
+.bpd-form-group input[type="text"],
+.bpd-form-group input[type="url"],
+.bpd-form-group input[type="password"],
+.bpd-form-group input[type="number"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.bpd-form-group input:focus {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+    outline: none;
+}
+
+.bpd-form-actions {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.bpd-form-actions .button {
+    margin-right: 10px;
+}
+
+/* Checkbox Groups */
+.bpd-checkbox-group {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    background: #fff;
+}
+
+.bpd-checkbox-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+
+.bpd-checkbox-item:last-child {
+    border-bottom: none;
+}
+
+.bpd-checkbox-item:hover {
+    background: #f9f9f9;
+}
+
+.bpd-checkbox-item input[type="checkbox"] {
+    margin: 4px 10px 0 0;
+    flex-shrink: 0;
+}
+
+.bpd-checkbox-label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.bpd-checkbox-label strong {
+    color: #23282d;
+    margin-bottom: 2px;
+}
+
+.bpd-checkbox-label small {
+    color: #666;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.bpd-version {
+    background: #0073aa;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    margin-left: 10px;
+    align-self: flex-start;
+}
+
+/* Sites List */
+.bpd-sites-list {
+    margin-top: 20px;
+}
+
+.bpd-sites-list table {
+    margin-top: 10px;
+}
+
+.bpd-sites-list th {
+    font-weight: 600;
+    color: #23282d;
+}
+
+.bpd-sites-list td {
+    vertical-align: middle;
+}
+
+.bpd-sites-list .button {
+    margin-right: 5px;
+}
+
+/* Loading Overlay */
+#bpd-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bpd-loading-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.bpd-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0073aa;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Results Section */
+#bpd-results {
+    background: #f9f9f9;
+}
+
+.bpd-result-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border-left: 4px solid;
+}
+
+.bpd-result-success {
+    background: #d4edda;
+    border-left-color: #28a745;
+    color: #155724;
+}
+
+.bpd-result-error {
+    background: #f8d7da;
+    border-left-color: #dc3545;
+    color: #721c24;
+}
+
+.bpd-result-summary {
+    background: #e2e3e5;
+    border-left-color: #6c757d;
+    color: #383d41;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .bpd-form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .bpd-form-actions .button {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .bpd-sites-list table {
+        font-size: 12px;
+    }
+    
+    .bpd-sites-list .button {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+}
+
+/* Success/Error Messages */
+.bpd-notice {
+    padding: 12px 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+    border-left: 4px solid;
+}
+
+.bpd-notice-success {
+    background: #d4edda;
+    border-left-color: #28a745;
+    color: #155724;
+}
+
+.bpd-notice-error {
+    background: #f8d7da;
+    border-left-color: #dc3545;
+    color: #721c24;
+}
+
+.bpd-notice-info {
+    background: #d1ecf1;
+    border-left-color: #17a2b8;
+    color: #0c5460;
+}
+
+/* Button States */
+#bpd-deploy-plugins:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Form Validation */
+.bpd-form-group input:invalid {
+    border-color: #dc3545;
+}
+
+.bpd-form-group input:invalid:focus {
+    box-shadow: 0 0 0 1px #dc3545;
+} 
