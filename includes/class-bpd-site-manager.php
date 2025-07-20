@@ -61,11 +61,19 @@ class BPD_Site_Manager {
             return false;
         }
         
-        // Encrypt password
-        $data['ftp_password'] = $this->encrypt_password($data['ftp_password']);
-        
         if (isset($data['id']) && $data['id']) {
             // Update existing site
+            // If password is empty, keep the existing password
+            if (empty($data['ftp_password'])) {
+                $existing_site = $this->get_site($data['id']);
+                if ($existing_site) {
+                    $data['ftp_password'] = $existing_site['ftp_password'];
+                }
+            } else {
+                // Encrypt new password
+                $data['ftp_password'] = $this->encrypt_password($data['ftp_password']);
+            }
+            
             $result = $wpdb->update(
                 $this->table_name,
                 $data,
@@ -75,7 +83,14 @@ class BPD_Site_Manager {
             );
             return $result !== false ? $data['id'] : false;
         } else {
-            // Insert new site
+            // Insert new site - password is required for new sites
+            if (empty($data['ftp_password'])) {
+                return false;
+            }
+            
+            // Encrypt password
+            $data['ftp_password'] = $this->encrypt_password($data['ftp_password']);
+            
             $result = $wpdb->insert(
                 $this->table_name,
                 $data,
@@ -96,9 +111,27 @@ class BPD_Site_Manager {
     }
     
     /**
-     * Test FTP connection
+     * Test FTP/SFTP connection
      */
     public function test_connection($site_data) {
+        $ftp_host = $site_data['ftp_host'];
+        $ftp_port = isset($site_data['ftp_port']) ? (int) $site_data['ftp_port'] : 21;
+        $ftp_username = $site_data['ftp_username'];
+        $ftp_password = $site_data['ftp_password'];
+        $ftp_path = isset($site_data['ftp_path']) ? $site_data['ftp_path'] : '/wp-content/plugins/';
+        
+        // Auto-detect SFTP (port 22) vs FTP (port 21)
+        if ($ftp_port == 22) {
+            return $this->test_sftp_connection($site_data);
+        } else {
+            return $this->test_ftp_connection($site_data);
+        }
+    }
+    
+    /**
+     * Test FTP connection
+     */
+    private function test_ftp_connection($site_data) {
         // Check if FTP extension is available
         if (!function_exists('ftp_connect')) {
             return array(
@@ -139,7 +172,82 @@ class BPD_Site_Manager {
         }
         
         ftp_close($conn);
-        return array('success' => true, 'message' => 'Connection successful');
+        return array('success' => true, 'message' => 'FTP connection successful');
+    }
+    
+    /**
+     * Test SFTP connection
+     */
+    private function test_sftp_connection($site_data) {
+        // Check if SSH2 extension is available
+        if (!function_exists('ssh2_connect')) {
+            return array(
+                'success' => false, 
+                'message' => 'SSH2 extension is not available. Please install php-ssh2 extension for SFTP support.'
+            );
+        }
+        
+        $host = $site_data['ftp_host'];
+        $port = isset($site_data['ftp_port']) ? (int) $site_data['ftp_port'] : 22;
+        $username = $site_data['ftp_username'];
+        $password = $site_data['ftp_password'];
+        $remote_path = isset($site_data['ftp_path']) ? $site_data['ftp_path'] : '/wp-content/plugins/';
+        
+        error_log("Attempting SFTP connection to: {$host}:{$port}");
+        
+        // Connect via SSH with compatibility for different PHP versions
+        $connection = $this->ssh2_connect_compat($host, $port);
+        if (!$connection) {
+            $error = error_get_last();
+            error_log("SFTP connection failed: " . ($error['message'] ?? 'Unknown error'));
+            return array('success' => false, 'message' => 'Could not connect to SFTP server. Check Docker networking and firewall settings.');
+        }
+        
+        // Authenticate
+        if (!@ssh2_auth_password($connection, $username, $password)) {
+            ssh2_disconnect($connection);
+            return array('success' => false, 'message' => 'SFTP authentication failed - check username and password');
+        }
+        
+        // Create SFTP session
+        $sftp = @ssh2_sftp($connection);
+        if (!$sftp) {
+            ssh2_disconnect($connection);
+            return array('success' => false, 'message' => 'Could not create SFTP session');
+        }
+        
+        // Test directory access
+        $test_file = "ssh2.sftp://{$sftp}{$remote_path}";
+        if (!is_dir($test_file)) {
+            ssh2_disconnect($connection);
+            return array('success' => false, 'message' => 'Cannot access plugins directory via SFTP');
+        }
+        
+        ssh2_disconnect($connection);
+        return array('success' => true, 'message' => 'SFTP connection successful');
+    }
+    
+    /**
+     * SSH2 connect with compatibility for different PHP versions
+     */
+    private function ssh2_connect_compat($host, $port) {
+        // Try different function signatures for compatibility
+        try {
+            // Newer PHP versions - no third parameter
+            return @ssh2_connect($host, $port);
+        } catch (TypeError $e) {
+            // Older PHP versions - third parameter as timeout
+            try {
+                return @ssh2_connect($host, $port, 10);
+            } catch (TypeError $e2) {
+                // Try with methods array
+                try {
+                    return @ssh2_connect($host, $port, array());
+                } catch (Exception $e3) {
+                    return false;
+                }
+            }
+        }
     }
     
     /**
@@ -178,6 +286,21 @@ class BPD_Site_Manager {
     }
     
     /**
+     * Normalize FTP path to ensure it ends with forward slash
+     */
+    private function normalize_ftp_path($path) {
+        if (empty($path)) {
+            return '/wp-content/plugins/';
+        }
+        
+        // Remove any trailing slashes first
+        $path = rtrim($path, '/');
+        
+        // Add forward slash
+        return $path . '/';
+    }
+    
+    /**
      * Handle save site AJAX
      */
     public function handle_save_site_ajax() {
@@ -193,9 +316,27 @@ class BPD_Site_Manager {
             'ftp_host' => sanitize_text_field($_POST['ftp_host']),
             'ftp_port' => (int) $_POST['ftp_port'],
             'ftp_username' => sanitize_text_field($_POST['ftp_username']),
-            'ftp_password' => $_POST['ftp_password'],
-            'ftp_path' => sanitize_text_field($_POST['ftp_path'])
+            'ftp_path' => $this->normalize_ftp_path(sanitize_text_field($_POST['ftp_path']))
         );
+        
+        // Handle password logic
+        if (isset($_POST['ftp_password']) && $_POST['ftp_password'] !== '') {
+            // New password provided - use it
+            $site_data['ftp_password'] = $_POST['ftp_password'];
+        } elseif (isset($_POST['id']) && $_POST['id']) {
+            // Editing existing site with empty password - get from database
+            $existing_site = $this->get_site((int) $_POST['id']);
+            if ($existing_site) {
+                $site_data['ftp_password'] = $this->decrypt_password($existing_site['ftp_password']);
+            } else {
+                wp_send_json_error('Site not found');
+                return;
+            }
+        } else {
+            // New site with empty password - this should not happen due to validation
+            wp_send_json_error('Password is required for new sites');
+            return;
+        }
         
         if (isset($_POST['id']) && $_POST['id']) {
             $site_data['id'] = (int) $_POST['id'];
@@ -244,9 +385,27 @@ class BPD_Site_Manager {
             'ftp_host' => sanitize_text_field($_POST['ftp_host']),
             'ftp_port' => (int) $_POST['ftp_port'],
             'ftp_username' => sanitize_text_field($_POST['ftp_username']),
-            'ftp_password' => $_POST['ftp_password'],
-            'ftp_path' => sanitize_text_field($_POST['ftp_path'])
+            'ftp_path' => $this->normalize_ftp_path(sanitize_text_field($_POST['ftp_path']))
         );
+        
+        // Handle password logic for test connection
+        if (isset($_POST['ftp_password']) && $_POST['ftp_password'] !== '') {
+            // New password provided - use it
+            $site_data['ftp_password'] = $_POST['ftp_password'];
+        } elseif (isset($_POST['id']) && $_POST['id']) {
+            // Testing existing site with empty password - get from database
+            $existing_site = $this->get_site((int) $_POST['id']);
+            if ($existing_site) {
+                $site_data['ftp_password'] = $this->decrypt_password($existing_site['ftp_password']);
+            } else {
+                wp_send_json_error('Site not found');
+                return;
+            }
+        } else {
+            // New connection test with empty password
+            wp_send_json_error('Password is required for connection test');
+            return;
+        }
         
         $result = $this->test_connection($site_data);
         

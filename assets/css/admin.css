@@ -73,6 +73,21 @@
     outline: none;
 }
 
+.bpd-form-group .description {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.bpd-form-group label small {
+    color: #666;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: italic;
+}
+
 .bpd-form-actions {
     margin-top: 20px;
     padding-top: 15px;

@@ -30,23 +30,25 @@ if (!defined('ABSPATH')) {
                     
                     <div class="bpd-form-row">
                         <div class="bpd-form-group">
-                            <label for="ftp_host"><?php _e('FTP Host', 'bulk-plugin-deployer'); ?> *</label>
+                            <label for="ftp_host"><?php _e('FTP/SFTP Host', 'bulk-plugin-deployer'); ?> *</label>
                             <input type="text" id="ftp_host" name="ftp_host" required>
                         </div>
                         <div class="bpd-form-group">
-                            <label for="ftp_port"><?php _e('FTP Port', 'bulk-plugin-deployer'); ?></label>
+                            <label for="ftp_port"><?php _e('FTP/SFTP Port', 'bulk-plugin-deployer'); ?></label>
                             <input type="number" id="ftp_port" name="ftp_port" value="21" min="1" max="65535">
+                            <small class="description"><?php _e('Use port 21 for FTP, port 22 for SFTP', 'bulk-plugin-deployer'); ?></small>
                         </div>
                     </div>
                     
                     <div class="bpd-form-row">
                         <div class="bpd-form-group">
-                            <label for="ftp_username"><?php _e('FTP Username', 'bulk-plugin-deployer'); ?> *</label>
+                            <label for="ftp_username"><?php _e('FTP/SFTP Username', 'bulk-plugin-deployer'); ?> *</label>
                             <input type="text" id="ftp_username" name="ftp_username" required>
                         </div>
                         <div class="bpd-form-group">
-                            <label for="ftp_password"><?php _e('FTP Password', 'bulk-plugin-deployer'); ?> *</label>
+                            <label for="ftp_password"><?php _e('FTP/SFTP Password', 'bulk-plugin-deployer'); ?> *</label>
                             <input type="password" id="ftp_password" name="ftp_password" required>
+                            <small class="description"><?php _e('Leave blank when editing to keep existing password', 'bulk-plugin-deployer'); ?></small>
                         </div>
                     </div>
                     

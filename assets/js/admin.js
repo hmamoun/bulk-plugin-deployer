@@ -35,8 +35,8 @@ jQuery(document).ready(function($) {
     }
     
     function handleSiteFormSubmit(e) {
+
         e.preventDefault();
-        
         const formData = new FormData(e.target);
         formData.append('action', 'bpd_save_site');
         formData.append('nonce', bpd_ajax.nonce);
@@ -74,6 +74,11 @@ jQuery(document).ready(function($) {
         const formData = new FormData($('#bpd-site-form')[0]);
         formData.append('action', 'bpd_test_connection');
         formData.append('nonce', bpd_ajax.nonce);
+        
+        // Add site ID if editing an existing site
+        if (currentSiteId) {
+            formData.append('id', currentSiteId);
+        }
         
         showLoading(bpd_ajax.strings.testing_connection || 'Testing connection...');
         
@@ -116,6 +121,12 @@ jQuery(document).ready(function($) {
         // Update form title and button
         $('.bpd-form-container h3').text('Edit Site');
         $('.bpd-form-actions button[type="submit"]').text('Update Site');
+        
+        // Remove required attribute from password field when editing
+        $('#ftp_password').removeAttr('required');
+        
+        // Update password field label to indicate it's optional
+        $('#ftp_password').closest('.bpd-form-group').find('label').html('FTP Password <small>(leave blank to keep existing)</small>');
         
         // Scroll to form
         $('html, body').animate({
@@ -169,6 +180,26 @@ jQuery(document).ready(function($) {
             return this.value;
         }).get();
         
+        // Debug logging
+        console.log('Selected plugins:', selectedPlugins);
+        console.log('Selected sites:', selectedSites);
+        console.log('Plugins JSON:', JSON.stringify(selectedPlugins));
+        console.log('Sites JSON:', JSON.stringify(selectedSites));
+        
+        // Additional debugging
+        console.log('All plugin checkboxes:', $('input[name="plugins[]"]').length);
+        console.log('All site checkboxes:', $('input[name="sites[]"]').length);
+        console.log('Checked plugin checkboxes:', $('input[name="plugins[]"]:checked').length);
+        console.log('Checked site checkboxes:', $('input[name="sites[]"]:checked').length);
+        
+        // Log individual checkbox values
+        $('input[name="plugins[]"]:checked').each(function(index) {
+            console.log('Plugin checkbox ' + index + ':', $(this).val());
+        });
+        $('input[name="sites[]"]:checked').each(function(index) {
+            console.log('Site checkbox ' + index + ':', $(this).val());
+        });
+        
         if (selectedPlugins.length === 0) {
             showNotice('Please select at least one plugin to deploy', 'error');
             return;
@@ -182,8 +213,19 @@ jQuery(document).ready(function($) {
         const formData = new FormData();
         formData.append('action', 'bpd_deploy_plugins');
         formData.append('nonce', bpd_ajax.nonce);
-        formData.append('plugins', JSON.stringify(selectedPlugins));
-        formData.append('sites', JSON.stringify(selectedSites));
+        
+        // Ensure we have valid data before sending
+        if (selectedPlugins.length > 0) {
+            formData.append('plugins', JSON.stringify(selectedPlugins));
+        } else {
+            formData.append('plugins', JSON.stringify([]));
+        }
+        
+        if (selectedSites.length > 0) {
+            formData.append('sites', JSON.stringify(selectedSites));
+        } else {
+            formData.append('sites', JSON.stringify([]));
+        }
         
         showLoading(bpd_ajax.strings.deploying || 'Deploying plugins...');
         
@@ -249,6 +291,12 @@ jQuery(document).ready(function($) {
         currentSiteId = null;
         $('.bpd-form-container h3').text('Add New Site');
         $('.bpd-form-actions button[type="submit"]').text('Save Site');
+        
+        // Restore required attribute to password field for new sites
+        $('#ftp_password').attr('required', 'required');
+        
+        // Restore original password field label
+        $('#ftp_password').closest('.bpd-form-group').find('label').html('FTP Password *');
     }
     
     function updateDeployButton() {

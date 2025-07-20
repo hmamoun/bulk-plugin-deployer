@@ -22,7 +22,7 @@ class BPD_SFTP_Deployer {
         $port = isset($site_data['sftp_port']) ? (int) $site_data['sftp_port'] : 22;
         $username = $site_data['ftp_username'];
         $password = $site_data['ftp_password'];
-        $remote_path = isset($site_data['ftp_path']) ? $site_data['ftp_path'] : '/wp-content/plugins/';
+        $remote_path = $this->normalize_ftp_path(isset($site_data['ftp_path']) ? $site_data['ftp_path'] : '/wp-content/plugins/');
         
         // Create temporary zip file
         $temp_zip = $this->create_plugin_zip($plugin_path, $plugin_name);
@@ -30,8 +30,8 @@ class BPD_SFTP_Deployer {
             return array('success' => false, 'message' => 'Failed to create plugin zip');
         }
         
-        // Connect via SFTP
-        $connection = @ssh2_connect($host, $port);
+        // Connect via SFTP with compatibility for different PHP versions
+        $connection = $this->ssh2_connect_compat($host, $port);
         if (!$connection) {
             unlink($temp_zip);
             return array('success' => false, 'message' => 'Could not connect to SFTP server');
@@ -50,8 +50,12 @@ class BPD_SFTP_Deployer {
             return array('success' => false, 'message' => 'Could not create SFTP session');
         }
         
-        // Upload file
+        // Upload file with force overwrite
         $remote_file = $remote_path . $plugin_name . '.zip';
+        
+        // Delete existing file if it exists (force overwrite)
+        @ssh2_sftp_unlink($sftp, $remote_file);
+        
         $stream = @fopen("ssh2.sftp://{$sftp}{$remote_file}", 'w');
         if (!$stream) {
             unlink($temp_zip);
@@ -125,7 +129,7 @@ class BPD_SFTP_Deployer {
         $username = $site_data['ftp_username'];
         $password = $site_data['ftp_password'];
         
-        $connection = @ssh2_connect($host, $port, 10);
+        $connection = @ssh2_connect($host, $port);
         if (!$connection) {
             return array('success' => false, 'message' => 'Could not connect to SFTP server');
         }
@@ -140,5 +144,43 @@ class BPD_SFTP_Deployer {
         }
         
         return array('success' => true, 'message' => 'SFTP connection successful');
+    }
+    
+    /**
+     * SSH2 connect with compatibility for different PHP versions
+     */
+    private function ssh2_connect_compat($host, $port) {
+        // Try different function signatures for compatibility
+        try {
+            // Newer PHP versions - no third parameter
+            return @ssh2_connect($host, $port);
+        } catch (TypeError $e) {
+            // Older PHP versions - third parameter as timeout
+            try {
+                return @ssh2_connect($host, $port, 10);
+            } catch (TypeError $e2) {
+                // Try with methods array
+                try {
+                    return @ssh2_connect($host, $port, array());
+                } catch (Exception $e3) {
+                    return false;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Normalize FTP path to ensure it ends with forward slash
+     */
+    private function normalize_ftp_path($path) {
+        if (empty($path)) {
+            return '/wp-content/plugins/';
+        }
+        
+        // Remove any trailing slashes first
+        $path = rtrim($path, '/');
+        
+        // Add forward slash
+        return $path . '/';
     }
 } 

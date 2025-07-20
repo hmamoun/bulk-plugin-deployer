@@ -36,9 +36,9 @@ require_once BPD_PLUGIN_DIR . 'includes/class-bpd-sftp-deployer.php';
 
 // Initialize the plugin
 function bpd_init() {
-    // Check system requirements
-    if (!function_exists('ftp_connect')) {
-        add_action('admin_notices', 'bpd_ftp_extension_notice');
+    // Check system requirements - need either FTP or SSH2 extension
+    if (!function_exists('ftp_connect') && !function_exists('ssh2_connect')) {
+        add_action('admin_notices', 'bpd_extension_notice');
         return;
     }
     
@@ -47,13 +47,18 @@ function bpd_init() {
 }
 add_action('plugins_loaded', 'bpd_init');
 
-// Show notice if FTP extension is missing
-function bpd_ftp_extension_notice() {
+// Show notice if required extensions are missing
+function bpd_extension_notice() {
     ?>
     <div class="notice notice-error">
         <p>
             <strong>Bulk Plugin Deployer:</strong> 
-            The PHP FTP extension is required but not installed. Please contact your hosting provider to install the php-ftp extension.
+            Either the PHP FTP extension or SSH2 extension is required but neither is installed. 
+            Please contact your hosting provider to install either:
+            <ul style="margin-left: 20px;">
+                <li>php-ftp extension (for FTP connections)</li>
+                <li>php-ssh2 extension (for SFTP connections)</li>
+            </ul>
         </p>
     </div>
     <?php
