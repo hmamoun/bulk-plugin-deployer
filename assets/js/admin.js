@@ -21,6 +21,9 @@ jQuery(document).ready(function($) {
         // Clear form button
         $('#bpd-clear-form').on('click', clearSiteForm);
         
+        // Generate standard path button
+        $('#bpd-generate-path').on('click', handleGeneratePath);
+        
         // Edit site button
         $(document).on('click', '.bpd-edit-site', handleEditSite);
         
@@ -180,25 +183,7 @@ jQuery(document).ready(function($) {
             return this.value;
         }).get();
         
-        // Debug logging
-        console.log('Selected plugins:', selectedPlugins);
-        console.log('Selected sites:', selectedSites);
-        console.log('Plugins JSON:', JSON.stringify(selectedPlugins));
-        console.log('Sites JSON:', JSON.stringify(selectedSites));
-        
-        // Additional debugging
-        console.log('All plugin checkboxes:', $('input[name="plugins[]"]').length);
-        console.log('All site checkboxes:', $('input[name="sites[]"]').length);
-        console.log('Checked plugin checkboxes:', $('input[name="plugins[]"]:checked').length);
-        console.log('Checked site checkboxes:', $('input[name="sites[]"]:checked').length);
-        
-        // Log individual checkbox values
-        $('input[name="plugins[]"]:checked').each(function(index) {
-            console.log('Plugin checkbox ' + index + ':', $(this).val());
-        });
-        $('input[name="sites[]"]:checked').each(function(index) {
-            console.log('Site checkbox ' + index + ':', $(this).val());
-        });
+
         
         if (selectedPlugins.length === 0) {
             showNotice('Please select at least one plugin to deploy', 'error');
@@ -297,6 +282,39 @@ jQuery(document).ready(function($) {
         
         // Restore original password field label
         $('#ftp_password').closest('.bpd-form-group').find('label').html('FTP Password *');
+    }
+    
+    function handleGeneratePath(e) {
+        e.preventDefault();
+        
+        const username = $('#ftp_username').val();
+        const siteUrl = $('#site_url').val();
+        
+        if (!username) {
+            showNotice('Please enter the FTP username first', 'error');
+            $('#ftp_username').focus();
+            return;
+        }
+        
+        if (!siteUrl) {
+            showNotice('Please enter the site URL first', 'error');
+            $('#site_url').focus();
+            return;
+        }
+        
+        // Extract domain from URL (remove protocol and www)
+        let domain = siteUrl.replace(/^https?:\/\//, '').replace(/^www\./, '');
+        
+        // Remove trailing slash if present
+        domain = domain.replace(/\/$/, '');
+        
+        // Generate the standard path
+        const standardPath = `/home/${username}/${domain}/wp-content/plugins/`;
+        
+        // Set the path in the input field
+        $('#ftp_path').val(standardPath);
+        
+        showNotice('Standard path generated successfully!', 'success');
     }
     
     function updateDeployButton() {

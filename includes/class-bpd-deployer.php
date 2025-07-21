@@ -462,45 +462,34 @@ class BPD_Deployer {
             wp_die('Unauthorized');
         }
         
-        // Debug logging
-        error_log('BPD: Raw POST data: ' . var_export($_POST, true));
-        
         // Handle plugins - could be array or JSON string
         $plugins_data = $_POST['plugins'];
-        error_log('BPD: Raw plugins data: ' . var_export($plugins_data, true));
         if (is_string($plugins_data)) {
             // Handle double-escaped JSON (WordPress escaping)
             $plugins_data = stripslashes($plugins_data);
-            error_log('BPD: After stripslashes plugins data: ' . var_export($plugins_data, true));
             
             $plugins_data = json_decode($plugins_data, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
-                error_log('BPD: JSON decode error for plugins: ' . json_last_error_msg());
                 $plugins_data = array();
             }
         }
         if (!is_array($plugins_data)) {
-            error_log('BPD: plugins_data is not an array: ' . var_export($plugins_data, true));
             $plugins_data = array();
         }
         $plugin_names = array_map('sanitize_text_field', $plugins_data);
         
         // Handle sites - could be array or JSON string
         $sites_data = $_POST['sites'];
-        error_log('BPD: Raw sites data: ' . var_export($sites_data, true));
         if (is_string($sites_data)) {
             // Handle double-escaped JSON (WordPress escaping)
             $sites_data = stripslashes($sites_data);
-            error_log('BPD: After stripslashes sites data: ' . var_export($sites_data, true));
             
             $sites_data = json_decode($sites_data, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
-                error_log('BPD: JSON decode error for sites: ' . json_last_error_msg());
                 $sites_data = array();
             }
         }
         if (!is_array($sites_data)) {
-            error_log('BPD: sites_data is not an array: ' . var_export($sites_data, true));
             $sites_data = array();
         }
         $site_ids = array_map('intval', $sites_data);
@@ -704,12 +693,6 @@ class BPD_Deployer {
             $file_path = $file->getRealPath();
             $relative_path = substr($file_path, strlen($local_path) + 1);
             
-            // Debug logging
-            error_log("BPD: File path: " . $file_path);
-            error_log("BPD: Local path: " . $local_path);
-            error_log("BPD: Relative path: " . $relative_path);
-            error_log("BPD: Remote file: " . $remote_dir . '/' . $relative_path);
-            
             // Upload file directly to remote directory (no subdirectory)
             $remote_file = $remote_dir . '/' . $relative_path;
             
@@ -793,12 +776,6 @@ class BPD_Deployer {
             
             $file_path = $file->getRealPath();
             $relative_path = substr($file_path, strlen($local_path) + 1);
-            
-            // Debug logging
-            error_log("BPD: SFTP File path: " . $file_path);
-            error_log("BPD: SFTP Local path: " . $local_path);
-            error_log("BPD: SFTP Relative path: " . $relative_path);
-            error_log("BPD: SFTP Remote file: " . $remote_dir . '/' . $relative_path);
             
             $remote_file = $remote_dir . '/' . $relative_path;
             

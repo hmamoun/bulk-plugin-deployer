@@ -55,7 +55,13 @@ if (!defined('ABSPATH')) {
                     <div class="bpd-form-row">
                         <div class="bpd-form-group">
                             <label for="ftp_path"><?php _e('FTP Path to Plugins', 'bulk-plugin-deployer'); ?></label>
-                            <input type="text" id="ftp_path" name="ftp_path" value="/wp-content/plugins/">
+                            <div class="bpd-input-with-link">
+                                <input type="text" id="ftp_path" name="ftp_path" value="/wp-content/plugins/">
+                                <a href="#" id="bpd-generate-path" class="button button-small" title="<?php _e('Generate standard path: /home/[username]/[site]/wp-content/plugins/', 'bulk-plugin-deployer'); ?>">
+                                    <?php _e('Use Standard', 'bulk-plugin-deployer'); ?>
+                                </a>
+                            </div>
+                            <small class="description"><?php _e('Standard path format: /home/[username]/[site]/wp-content/plugins/', 'bulk-plugin-deployer'); ?></small>
                         </div>
                     </div>
                     

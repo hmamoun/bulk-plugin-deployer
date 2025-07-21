@@ -73,6 +73,22 @@
     outline: none;
 }
 
+/* Input with link styling */
+.bpd-input-with-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bpd-input-with-link input {
+    flex: 1;
+}
+
+.bpd-input-with-link .button {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 .bpd-form-group .description {
     display: block;
     margin-top: 5px;
